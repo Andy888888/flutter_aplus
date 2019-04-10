@@ -4,6 +4,7 @@ import 'bottom_selection.dart';
 import 'event_callback.dart';
 import 'widgets.dart';
 import 'square_label.dart';
+import 'package:flutter_aplus/network/request.dart';
 
 /// resource
 var _title = '编辑房源';
@@ -239,6 +240,8 @@ class EditPropertyBody extends StatelessWidget {
 
     double height = 62 * (_propertiesSelected.length / 4).ceil().toDouble();
     print(height);
+
+    print(RequestManager.getHeaders('Ceshigzywq', 'android'));
 
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
