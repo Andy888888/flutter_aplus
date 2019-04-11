@@ -5,6 +5,26 @@ import 'event_callback.dart';
 import 'widgets.dart';
 import 'square_label.dart';
 import 'package:flutter_aplus/network/request.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_aplus/network/property.dart';
+
+/// 传递的参数
+int trustType;
+String keyId;
+
+class TrustType {
+  /// 出售
+  static const int SALE = 1;
+
+  /// 出租
+  static const int RENT = 2;
+
+  /// 租售
+  static const int RENT_SALE = 3;
+
+  /// 全部
+  static const int ALL = 6;
+}
 
 /// resource
 var _title = '编辑房源';
@@ -22,9 +42,7 @@ List<String> _properties = <String>[
   '学区房',
   '低楼层',
 ];
-List<String> _houseCount = <String>[
-  '1','2','3','4','5'
-];
+List<String> _houseCount = <String>['1', '2', '3', '4', '5', '6'];
 
 FocusNode _buildFocusNode = FocusNode();
 FocusNode _pragmaticFocusNode = FocusNode();
@@ -136,7 +154,58 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
     });
   }
 
+  void request() async {
+    RequestManager manager = RequestManager();
+    manager.newsProtocol();
+    Response<String> result = await manager.getNews('yule');
+    print(result);
+    int stop = 0;
+  }
+
+  void commit() async {
+    Property property = Property();
+
+//    -String KeyId;
+//    -double Square; // 建筑面积
+//    -double SquareUse; // 实用面积
+//    -String HouseType; // 房型
+//    -double RentPrice; // 租价
+//    -double SalePrice; // 售价
+//    String HouseDirectionKeyId; // 朝向KeyId
+//    -int TrustType; // 交易类型
+//    -String PropertyAssess; // 出租点评
+//    -String PropertySaleAssess; // 出售点评
+//    List<String> PropertyAttributeKeyIds; // 房源属性keyId
+
+    property.Square = double.tryParse(_buildController.text.trim());
+    property.SquareUse = double.tryParse(_pragmaticController.text.trim());
+    property.HouseType =
+    '$_roomSelected-$_livingRoomSelected-$_cookHouseSelected-$_toiletSelected';
+    property.TrustType = trustType;
+    property.KeyId = keyId;
+
+//    HouseDirectionKeyId
+//    PropertyAttributeKeyIds
+
+
+    if (trustType == TrustType.RENT) {
+      property.RentPrice = double.tryParse(_rentController.text.trim());
+      property.PropertyAssess = _commentController.text.trim();
+    } else {
+      property.SalePrice = double.tryParse(_rentController.text.trim());
+      property.PropertySaleAssess = _commentController.text.trim();
+    }
+
+    RequestManager manager = RequestManager();
+    manager.aplusProtocol();
+    Response<String> result = await manager.commitProperty(property);
+    print(result);
+    int stop = 0;
+  }
+
   void _showMsg(BuildContext context) {
+    commit();
+
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -240,8 +309,6 @@ class EditPropertyBody extends StatelessWidget {
 
     double height = 62 * (_propertiesSelected.length / 4).ceil().toDouble();
     print(height);
-
-    print(RequestManager.getHeaders('Ceshigzywq', 'android'));
 
     return GestureDetector(
       onTapDown: (TapDownDetails details) {
