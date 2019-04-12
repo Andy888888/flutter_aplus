@@ -20,13 +20,13 @@ class HybridView{
         return Center(
           child: new CardPage(),
         );
-      case "route4":
+      case "editProperty":
         return Center(
           child: new EditPropertyPage(),
         );
       default:
         return Center(
-          child: new ListViewPage(),
+          child: new EditPropertyPage(),
         );
     }
   }
