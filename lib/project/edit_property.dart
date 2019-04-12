@@ -211,7 +211,34 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
     manager.aplusProtocol();
     Response<String> result = await manager.commitProperty(property);
     print(result);
-    int stop = 0;
+
+    setState(() {
+      Navigator.pop(context);
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('返回数据'),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: <Widget>[
+                  new Text(result.toString()),
+                ],
+              ),
+            ),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text('确定'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 
   void _showMsg(BuildContext context) {
