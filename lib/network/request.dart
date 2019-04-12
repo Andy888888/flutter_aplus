@@ -9,9 +9,22 @@ class RequestManager {
 
   RequestManager() {
     BaseOptions _options =
-        new BaseOptions(connectTimeout: 5000, receiveTimeout: 3000);
+        new BaseOptions(connectTimeout: 9000, receiveTimeout: 9000);
     _dio = new Dio(_options);
 //    Future<dynamic> ss = request();
+  }
+
+  RequestManager setProxyUrl(String proxyUrl) {
+    if (proxyUrl.isNotEmpty) {
+      (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
+          (client) {
+        client.findProxy = (uri) {
+          // todo：加入http代理
+          return proxyUrl;
+        };
+      };
+    }
+    return this;
   }
 
   void aplusProtocol() {
@@ -19,11 +32,14 @@ class RequestManager {
     _dio.interceptors.add(InterceptorsWrapper(
         onRequest: (RequestOptions options) {
           options.baseUrl = 'http://10.7.11.39:11061/api';
-          options.headers = getHeaders('Ceshigzywq', 'android');
+          getHeaders(options, 'Ceshigzywq', 'android');
         },
         onResponse: (Response response) {},
         onError: (DioError error) {
-          int statusCode = error.response.statusCode;
+          print('------------------');
+          print(error);
+          print('------------------');
+//          int statusCode = error.response.statusCode;
           // 500、400、404 ...
         }));
   }
@@ -43,7 +59,8 @@ class RequestManager {
         }));
   }
 
-  static Map<String, String> getHeaders(String userNo, String platform) {
+  static void getHeaders(
+      RequestOptions options, String userNo, String platform) {
     Map<String, String> header = Map<String, String>();
 
     String key = "CYDAP_com-group";
@@ -51,12 +68,10 @@ class RequestManager {
     String unixTime = DateTime.now().millisecondsSinceEpoch.toString();
     String sign = generateMd5(key + company + unixTime + userNo);
 
-    header['platform'] = platform;
-    header['staffno'] = userNo;
-    header['number'] = unixTime;
-    header['sign'] = sign;
-
-    return header;
+    options.headers['platform'] = platform;
+    options.headers['staffno'] = userNo;
+    options.headers['number'] = unixTime;
+    options.headers['sign'] = sign;
   }
 
   static String generateMd5(String data) {
@@ -75,7 +90,7 @@ class RequestManager {
 
     return await _dio.post<String>(
       '/property/property-edit',
-      data: property,
+      data: jsonString,
     );
   }
 

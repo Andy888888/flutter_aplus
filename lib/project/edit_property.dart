@@ -163,7 +163,19 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
   }
 
   void commit() async {
-    Property property = Property();
+    Property property = Property(
+      '',
+      2,
+      3,
+      '',
+      4,
+      5,
+      '',
+      1,
+      '',
+      '',
+      List<String>(),
+    );
 
 //    -String KeyId;
 //    -double Square; // 建筑面积
@@ -180,13 +192,12 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
     property.Square = double.tryParse(_buildController.text.trim());
     property.SquareUse = double.tryParse(_pragmaticController.text.trim());
     property.HouseType =
-    '$_roomSelected-$_livingRoomSelected-$_cookHouseSelected-$_toiletSelected';
+        '$_roomSelected-$_livingRoomSelected-$_cookHouseSelected-$_toiletSelected';
     property.TrustType = trustType;
     property.KeyId = keyId;
 
 //    HouseDirectionKeyId
 //    PropertyAttributeKeyIds
-
 
     if (trustType == TrustType.RENT) {
       property.RentPrice = double.tryParse(_rentController.text.trim());
@@ -196,7 +207,7 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
       property.PropertySaleAssess = _commentController.text.trim();
     }
 
-    RequestManager manager = RequestManager();
+    RequestManager manager = RequestManager().setProxyUrl('PROXY 10.5.235.43:8888');
     manager.aplusProtocol();
     Response<String> result = await manager.commitProperty(property);
     print(result);
@@ -204,7 +215,9 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
   }
 
   void _showMsg(BuildContext context) {
+//    request();
     commit();
+
 
     showDialog(
       context: context,
