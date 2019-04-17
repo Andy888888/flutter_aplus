@@ -7,6 +7,9 @@ import 'square_label.dart';
 import 'package:flutter_aplus/network/request.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_aplus/network/property.dart';
+import 'package:flutter_aplus/util/json_util.dart';
+import 'package:flutter_aplus/util/route_util.dart';
+import 'package:flutter/services.dart';
 
 /// 传递的参数
 int trustType;
@@ -63,19 +66,33 @@ String _livingRoomSelected = '1';
 String _cookHouseSelected = '1';
 String _toiletSelected = '2';
 
+String _priceLabel = '租价';
+String _commentLabel = '出租点评';
+
 List<String> _propertiesSelected = <String>[
   '南北通透',
   '双卫生间',
   '主卧朝南',
 ];
 
+const platform = const MethodChannel('flutter.io/lifecycle');
+
 /// 页面主入口
 class EditPropertyPage extends StatelessWidget {
+  EditPropertyPage setParam(String mKeyId, int mTrustType) {
+    keyId = mKeyId;
+    trustType = mTrustType;
+    return this;
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: _title,
       home: EditProperty(),
+//      theme: ThemeData(
+//        primaryColor: Color.fromARGB(255, 255, 51, 51);
+//      ),
     );
   }
 }
@@ -94,9 +111,24 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
     );
   }
 
+  Future<void> _back() async {
+    try {
+      await platform.invokeMethod('back');
+    } on PlatformException catch (e) {
+    }
+  }
+
   Widget _appBar(BuildContext context, String title) {
     return AppBar(
       title: new Text(title),
+      leading: GestureDetector(
+        child: Icon(
+          Icons.arrow_back_ios,
+        ),
+        onTapUp: (tapUpDetails){
+          _back();
+        },
+      ),
       actions: <Widget>[
         Row(
           children: <Widget>[
@@ -207,10 +239,12 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
       property.PropertySaleAssess = _commentController.text.trim();
     }
 
-    RequestManager manager = RequestManager().setProxyUrl('PROXY 10.5.235.43:8888');
+    RequestManager manager = RequestManager();//.setProxyUrl('10.5.235.43:8888');
     manager.aplusProtocol();
     Response<String> result = await manager.commitProperty(property);
     print(result);
+
+    Map<String, dynamic> map = JsonUtil.json2Map(result.toString());
 
     setState(() {
       Navigator.pop(context);
@@ -223,7 +257,11 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
             content: SingleChildScrollView(
               child: ListBody(
                 children: <Widget>[
-                  new Text(result.toString()),
+                  new Text("操作结果：" +
+                      map['Flag'].toString() +
+                      "\n\n" +
+                      "原因：" +
+                      map['ErrorMsg'].toString()),
                 ],
               ),
             ),
@@ -244,7 +282,6 @@ class PropertyState extends State<EditProperty> implements EventsCallback {
   void _showMsg(BuildContext context) {
 //    request();
     commit();
-
 
     showDialog(
       context: context,
@@ -324,6 +361,14 @@ class EditPropertyBody extends StatelessWidget {
   }
 
   Widget _body(BuildContext context) {
+    if (trustType == TrustType.RENT) {
+      _priceLabel = '租价';
+      _commentLabel = '出租点评';
+    } else {
+      _priceLabel = '售价';
+      _commentLabel = '出售点评';
+    }
+
     List<Widget> itemViews = List<Widget>();
     for (int i = 0; i < _propertiesSelected.length; i++) {
       itemViews.add(SquareLabel(
@@ -539,7 +584,7 @@ class EditPropertyBody extends StatelessWidget {
                       padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                       child: Row(
                         children: <Widget>[
-                          Expanded(child: Text('租价')),
+                          Expanded(child: Text(_priceLabel)),
                           Expanded(
                             child: TextField(
                               textAlign: TextAlign.right,
@@ -605,7 +650,7 @@ class EditPropertyBody extends StatelessWidget {
                     Container(
                       padding: EdgeInsets.all(10),
                       child: Text(
-                        '出租点评',
+                        _commentLabel,
                         style: TextStyle(
                           fontSize: 22.0,
                         ),

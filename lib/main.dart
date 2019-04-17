@@ -6,9 +6,8 @@ import 'rowPage.dart';
 import 'hybridView.dart';
 
 /// 应用程序主入口
-//void main() => runApp(GridViewPage());
-//void main() => runApp(new HybridView().widgetForRoute(window.defaultRouteName));
-void main() => runApp(new HybridView().widgetForRoute('editProperty'));
+void main() => runApp(new HybridView().widgetForRoute(window.defaultRouteName));
+//void main() => runApp(new HybridView().widgetForRoute('edit-property?{"keyId":"123","trustType":2}'));
 
 class MyApp2 extends StatelessWidget {
   @override

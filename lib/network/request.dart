@@ -19,8 +19,7 @@ class RequestManager {
       (_dio.httpClientAdapter as DefaultHttpClientAdapter).onHttpClientCreate =
           (client) {
         client.findProxy = (uri) {
-          // todo：加入http代理
-          return proxyUrl;
+          return "PROXY $proxyUrl";
         };
       };
     }
