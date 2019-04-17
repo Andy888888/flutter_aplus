@@ -60,10 +60,8 @@ class RequestManager {
 
   static void getHeaders(
       RequestOptions options, String userNo, String platform) {
-    Map<String, String> header = Map<String, String>();
-
-    String key = "CYDAP_com-group";
-    String company = "~Centa@";
+    String key = "aaaaa";
+    String company = "aaaaa";
     String unixTime = DateTime.now().millisecondsSinceEpoch.toString();
     String sign = generateMd5(key + company + unixTime + userNo);
 
