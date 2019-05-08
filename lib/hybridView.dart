@@ -6,6 +6,7 @@ import 'listViewPage.dart';
 import 'project/edit_property.dart';
 import 'package:flutter_aplus/util/json_util.dart';
 import 'package:flutter_aplus/util/route_util.dart';
+import 'image_test.dart';
 
 class HybridView {
   Widget widgetForRoute(String route) {
@@ -33,11 +34,18 @@ class HybridView {
           child: new EditPropertyPage().setParam(map['keyId'].toString(),
               int.tryParse(map['trustType'].toString())),
         );
+      case "image_test":
+        return Center(
+          child: new StackImages(),
+        );
       default:
         return Center(
-          child: new EditPropertyPage().setParam(map['keyId'].toString(),
-              int.tryParse(map['trustType'].toString())),
+          child: new StackImages(),
         );
+//        return Center(
+//          child: new EditPropertyPage().setParam(map['keyId'].toString(),
+//              int.tryParse(map['trustType'].toString())),
+//        );
     }
   }
 }

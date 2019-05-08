@@ -11,7 +11,7 @@ class ListViewPage extends StatelessWidget {
         ),
         body: Center(
           child: MyListView(
-            dataSource: new List<String>.generate(100, (i) => "Lina $i"),
+            dataSource: new List<String>.generate(100, (i) => "Item $i"),
           ),
         ),
       ),
@@ -36,4 +36,5 @@ class MyListView extends StatelessWidget {
         });
   }
 }
+
 
